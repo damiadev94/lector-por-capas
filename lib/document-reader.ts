@@ -1,4 +1,3 @@
-
 import { extractText, getDocumentProxy } from "unpdf";
 
 export type DocumentPage = {
@@ -6,12 +5,14 @@ export type DocumentPage = {
   text: string;
 };
 
-export async function readDocument(
-  file: File,
-): Promise<DocumentPage[]> {
+export async function readDocument(file: File): Promise<DocumentPage[]> {
   const name = file.name.toLowerCase();
 
-  if (name.endsWith(".txt")) {
+  if (
+    name.endsWith(".txt") ||
+    name.endsWith(".md") ||
+    name.endsWith(".markdown")
+  ) {
     const content = await file.text();
 
     return content
@@ -25,9 +26,7 @@ export async function readDocument(
 
   if (name.endsWith(".pdf")) {
     const buffer = await file.arrayBuffer();
-    const pdf = await getDocumentProxy(
-      new Uint8Array(buffer),
-    );
+    const pdf = await getDocumentProxy(new Uint8Array(buffer));
 
     const result = await extractText(pdf, {
       mergePages: false,
